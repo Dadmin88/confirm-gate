@@ -1,6 +1,6 @@
 {
   "name": "confirm-gate",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Destructive action confirmation gate for AI agents — generates one-time NATO-phonetic codes before irreversible operations.",
   "main": "server.js",
   "bin": {

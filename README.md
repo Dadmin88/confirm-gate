@@ -101,11 +101,12 @@ curl -X POST http://localhost:3051/api/request \
 
 # 2. Agent sends the URL to the user, waits for them to paste back a code
 
-# 3. Agent verifies the code
+# 3. Agent verifies the code (pass token + code to prevent cross-request mixup)
 curl -X POST http://localhost:3051/api/verify \
   -H 'Content-Type: application/json' \
-  -d '{"code":"YANKEE-2387-HOTEL"}'
+  -d '{"token":"<token from step 1>","code":"YANKEE-2387-HOTEL"}'
 # Returns: {"valid":true,"action":"...","details":"..."}
+# Note: token is optional (omit for backward compatibility) but strongly recommended
 ```
 
 ## Environment Variables
