@@ -34,11 +34,7 @@
       text-align: center;
     }
 
-    .header .skull {
-      font-size: 48px;
-      display: block;
-      margin-bottom: 8px;
-    }
+    .header .skull { font-size: 48px; display: block; margin-bottom: 8px; }
 
     .header h1 {
       font-size: 22px;
@@ -48,9 +44,7 @@
       color: #fff;
     }
 
-    .body {
-      padding: 32px;
-    }
+    .body { padding: 32px; }
 
     .label {
       font-size: 11px;
@@ -68,19 +62,8 @@
       margin-bottom: 16px;
     }
 
-    .action-name {
-      font-size: 18px;
-      font-weight: 600;
-      color: #ff6b6b;
-      margin-bottom: 8px;
-    }
-
-    .action-details {
-      font-size: 14px;
-      color: #aaa;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
+    .action-name { font-size: 18px; font-weight: 600; color: #ff6b6b; margin-bottom: 8px; }
+    .action-details { font-size: 14px; color: #aaa; line-height: 1.6; white-space: pre-wrap; }
 
     .warning-text {
       background: rgba(192, 57, 43, 0.1);
@@ -89,8 +72,67 @@
       border-radius: 0 8px 8px 0;
       font-size: 14px;
       color: #ff9999;
-      margin-bottom: 28px;
+      margin-bottom: 16px;
       line-height: 1.6;
+    }
+
+    /* Countdown */
+    .countdown-bar {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .countdown-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+    .countdown-time { font-family: 'Courier New', monospace; font-size: 18px; font-weight: 700; color: #e0e0e0; }
+    .countdown-time.urgent { color: #ff6b6b; }
+
+    .countdown-track {
+      height: 3px;
+      background: #222;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .countdown-fill {
+      height: 100%;
+      background: #2ecc71;
+      border-radius: 2px;
+      transition: width 1s linear, background 1s;
+    }
+
+    /* PIN input */
+    .pin-section { margin-bottom: 20px; }
+
+    .pin-input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: #e0e0e0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 4px;
+      text-align: center;
+      margin-top: 6px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .pin-input:focus { border-color: #c0392b; }
+    .pin-input.error { border-color: #ff6b6b; animation: shake 0.3s; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
     }
 
     .btn-confirm {
@@ -108,17 +150,14 @@
       text-transform: uppercase;
     }
 
-    .btn-confirm:hover { background: #a93226; }
-    .btn-confirm:active { background: #922b21; }
+    .btn-confirm:hover:not(:disabled) { background: #a93226; }
+    .btn-confirm:active:not(:disabled) { background: #922b21; }
     .btn-confirm:disabled { background: #444; cursor: default; }
 
-    .code-box {
-      display: none;
-      margin-top: 24px;
-      text-align: center;
-    }
-
+    .code-box { display: none; margin-top: 24px; text-align: center; }
     .code-box .label { margin-bottom: 12px; }
+
+    .code-wrapper { position: relative; display: inline-block; }
 
     .code-value {
       font-size: 28px;
@@ -129,40 +168,37 @@
       background: #0d1f17;
       border: 2px solid #2ecc71;
       border-radius: 8px;
-      padding: 16px 24px;
+      padding: 16px 56px 16px 24px;
       display: inline-block;
       margin-bottom: 12px;
     }
 
-    .code-instruction {
-      font-size: 13px;
-      color: #888;
-      line-height: 1.5;
+    .copy-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: 1px solid #2ecc71;
+      color: #2ecc71;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+      margin-bottom: 12px;
     }
 
-    .error-box {
-      display: none;
-      text-align: center;
-      padding: 24px;
-      color: #ff6b6b;
-      font-size: 15px;
-    }
+    .copy-btn:hover { background: rgba(46, 204, 113, 0.15); }
+    .copy-btn.copied { color: #fff; background: #2ecc71; border-color: #2ecc71; }
 
-    .expired-notice {
-      background: #1a1507;
-      border: 1px solid #7d6608;
-      color: #f4d03f;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 13px;
-      margin-top: 12px;
-      text-align: center;
-    }
+    .code-instruction { font-size: 13px; color: #888; line-height: 1.5; }
+
+    .error-box { display: none; text-align: center; padding: 24px; color: #ff6b6b; font-size: 15px; }
 
     .spinner {
       display: inline-block;
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       border-radius: 50%;
@@ -199,13 +235,34 @@
           If you did not request this, click away and tell your agent to stop.
         </div>
 
-        <button class="btn-confirm" id="confirm-btn" onclick="confirm()">
+        <!-- Countdown -->
+        <div class="countdown-bar">
+          <div>
+            <div class="countdown-label">Expires in</div>
+            <div class="countdown-fill-track" style="display:none">
+              <div class="countdown-track"><div class="countdown-fill" id="countdown-fill"></div></div>
+            </div>
+          </div>
+          <div class="countdown-time" id="countdown-time">5:00</div>
+        </div>
+
+        <!-- Optional PIN -->
+        <div class="pin-section" id="pin-section" style="display:none">
+          <div class="label">Confirmation PIN</div>
+          <input type="password" class="pin-input" id="pin-input" placeholder="••••" maxlength="20"
+            onkeydown="if(event.key==='Enter') doConfirm()">
+        </div>
+
+        <button class="btn-confirm" id="confirm-btn" onclick="doConfirm()">
           I understand — delete permanently
         </button>
 
         <div class="code-box" id="code-box">
           <div class="label">Paste this code back to your agent</div>
-          <div class="code-value" id="code-value"></div>
+          <div class="code-wrapper">
+            <div class="code-value" id="code-value"></div>
+            <button class="copy-btn" id="copy-btn" onclick="copyCode()" title="Copy to clipboard">📋</button>
+          </div>
           <div class="code-instruction">
             Your agent will not proceed until you send this code.<br>
             It expires in <strong>5 minutes</strong> and is single-use.
@@ -223,6 +280,8 @@
 
   <script>
     const token = location.pathname.split('/confirm/')[1];
+    let expiresAt = null;
+    let countdownInterval = null;
 
     async function load() {
       try {
@@ -238,33 +297,94 @@
         document.getElementById('action-name').textContent = data.action;
         document.getElementById('action-details').textContent = data.details || '';
         document.getElementById('content').style.display = 'block';
+
+        if (data.pin_required) {
+          document.getElementById('pin-section').style.display = 'block';
+          document.getElementById('pin-input').focus();
+        }
+
+        // Start countdown
+        expiresAt = data.expires_at;
+        startCountdown();
       } catch (e) {
         document.getElementById('loading').style.display = 'none';
         showError('Could not reach the confirmation service.');
       }
     }
 
-    async function confirm() {
+    function startCountdown() {
+      updateCountdown();
+      countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    function updateCountdown() {
+      const remaining = Math.max(0, expiresAt - Date.now());
+      const totalMs = 5 * 60 * 1000;
+      const pct = (remaining / totalMs) * 100;
+
+      const mins = Math.floor(remaining / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+      const el = document.getElementById('countdown-time');
+      const fill = document.getElementById('countdown-fill');
+
+      el.textContent = timeStr;
+      el.className = 'countdown-time' + (remaining < 60000 ? ' urgent' : '');
+      fill.style.width = pct + '%';
+      fill.style.background = remaining < 60000 ? '#ff6b6b' : remaining < 120000 ? '#f39c12' : '#2ecc71';
+
+      if (remaining === 0) {
+        clearInterval(countdownInterval);
+        document.getElementById('confirm-btn').disabled = true;
+        document.getElementById('confirm-btn').textContent = 'Expired';
+        showError('This link has expired. Ask your agent to generate a new one.');
+      }
+    }
+
+    async function doConfirm() {
       const btn = document.getElementById('confirm-btn');
+      const pinInput = document.getElementById('pin-input');
+      const pin = pinInput ? pinInput.value : '';
+
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Generating code...';
 
       try {
-        const res = await fetch(`/api/confirm/${token}`, { method: 'POST' });
+        const res = await fetch(`/api/confirm/${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+
+        if (res.status === 403) {
+          btn.disabled = false;
+          btn.innerHTML = 'I understand — delete permanently';
+          if (pinInput) {
+            pinInput.classList.add('error');
+            pinInput.value = '';
+            pinInput.focus();
+            setTimeout(() => pinInput.classList.remove('error'), 500);
+          }
+          return;
+        }
 
         if (res.status === 410) {
           btn.innerHTML = 'Expired';
           showError('This link expired before you could confirm. Ask your agent to generate a new one.');
           return;
         }
+
         if (!res.ok) {
           btn.disabled = false;
           btn.innerHTML = 'I understand — delete permanently';
           return;
         }
 
+        clearInterval(countdownInterval);
         const data = await res.json();
         btn.style.display = 'none';
+        if (pinInput) pinInput.closest('.pin-section').style.display = 'none';
         document.getElementById('code-value').textContent = data.code;
         document.getElementById('code-box').style.display = 'block';
       } catch (e) {
@@ -273,10 +393,21 @@
       }
     }
 
+    function copyCode() {
+      const code = document.getElementById('code-value').textContent;
+      const btn = document.getElementById('copy-btn');
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
     function showError(msg) {
       document.getElementById('error-msg').textContent = msg;
       document.getElementById('error-box').style.display = 'block';
       document.getElementById('content').style.display = 'none';
+      document.getElementById('loading').style.display = 'none';
     }
 
     load();

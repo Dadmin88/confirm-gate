@@ -7,9 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const DATA_FILE = process.env.DATA_FILE || '/data/tokens.json';
 const PORT = process.env.PORT || 3051;
+const DATA_FILE = process.env.DATA_FILE || '/data/tokens.json';
 const BASE_URL = process.env.BASE_URL || 'http://confirm.mesh';
+const CONFIRM_PIN = process.env.CONFIRM_PIN || '';
 const TOKEN_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 const NATO = [
@@ -19,18 +20,33 @@ const NATO = [
   'XRAY','YANKEE','ZULU'
 ];
 
-// --- Persistent store (file-backed Map) ---
+// --- Rate limiter (in-memory, per IP) ---
+const rateLimits = new Map();
+function checkRateLimit(ip, maxPerMinute = 10) {
+  const now = Date.now();
+  const window = 60 * 1000;
+  if (!rateLimits.has(ip)) rateLimits.set(ip, []);
+  const hits = rateLimits.get(ip).filter(t => now - t < window);
+  hits.push(now);
+  rateLimits.set(ip, hits);
+  return hits.length <= maxPerMinute;
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, hits] of rateLimits.entries()) {
+    const fresh = hits.filter(t => now - t < 60000);
+    if (fresh.length === 0) rateLimits.delete(ip);
+    else rateLimits.set(ip, fresh);
+  }
+}, 5 * 60 * 1000);
+
+// --- Persistent store (file-backed) ---
 let store = {};
 
 function loadStore() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      store = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    }
-  } catch (e) {
-    console.warn('Could not load store, starting fresh:', e.message);
-    store = {};
-  }
+    if (fs.existsSync(DATA_FILE)) store = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  } catch (e) { store = {}; }
 }
 
 function saveStore() {
@@ -43,10 +59,7 @@ function pruneExpired() {
   const now = Date.now();
   let changed = false;
   for (const [id, t] of Object.entries(store)) {
-    if (t.expires_at < now - 60000) {
-      delete store[id];
-      changed = true;
-    }
+    if (t.expires_at < now - 60000) { delete store[id]; changed = true; }
   }
   if (changed) saveStore();
 }
@@ -55,9 +68,7 @@ loadStore();
 setInterval(pruneExpired, 60 * 60 * 1000);
 
 // --- Helpers ---
-function generateToken() {
-  return crypto.randomBytes(16).toString('hex');
-}
+function generateToken() { return crypto.randomBytes(16).toString('hex'); }
 
 function generateCode() {
   const w1 = NATO[Math.floor(Math.random() * NATO.length)];
@@ -66,30 +77,21 @@ function generateCode() {
   return `${w1}-${num}-${w2}`;
 }
 
+function getIp(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
+}
+
 // --- Routes ---
 
-// Agent calls this to create a confirmation request
+// Agent creates a confirmation request
 app.post('/api/request', (req, res) => {
   const { action, details } = req.body;
   if (!action) return res.status(400).json({ error: 'action required' });
-
   const token = generateToken();
   const now = Date.now();
-  store[token] = {
-    action,
-    details: details || '',
-    status: 'pending',
-    code: null,
-    created_at: now,
-    expires_at: now + TOKEN_TTL_MS
-  };
+  store[token] = { action, details: details || '', status: 'pending', code: null, created_at: now, expires_at: now + TOKEN_TTL_MS };
   saveStore();
-
-  res.json({
-    token,
-    url: `${BASE_URL}/confirm/${token}`,
-    expires_in: 300
-  });
+  res.json({ token, url: `${BASE_URL}/confirm/${token}`, expires_in: 300 });
 });
 
 // Page fetches token info
@@ -98,26 +100,44 @@ app.get('/api/token/:token', (req, res) => {
   if (!t) return res.status(404).json({ error: 'not found' });
   if (t.expires_at < Date.now()) return res.status(410).json({ error: 'expired' });
   if (t.status !== 'pending') return res.status(409).json({ error: 'already used' });
-  res.json({ action: t.action, details: t.details });
+  res.json({
+    action: t.action,
+    details: t.details,
+    expires_at: t.expires_at,
+    pin_required: !!CONFIRM_PIN
+  });
 });
 
-// User clicks the button
+// User clicks confirm button
 app.post('/api/confirm/:token', (req, res) => {
+  const ip = getIp(req);
+  if (!checkRateLimit(ip, 10)) return res.status(429).json({ error: 'Too many attempts. Slow down.' });
+
   const t = store[req.params.token];
   if (!t) return res.status(404).json({ error: 'not found' });
   if (t.expires_at < Date.now()) return res.status(410).json({ error: 'expired' });
   if (t.status !== 'pending') return res.status(409).json({ error: 'already used' });
 
+  // PIN check
+  if (CONFIRM_PIN) {
+    const { pin } = req.body || {};
+    if (!pin || pin.trim() !== CONFIRM_PIN.trim()) {
+      return res.status(403).json({ error: 'Invalid PIN' });
+    }
+  }
+
   const code = generateCode();
   t.status = 'confirmed';
   t.code = code;
   saveStore();
-
   res.json({ code });
 });
 
-// Agent calls this to verify the code the user pasted back
+// Agent verifies the code
 app.post('/api/verify', (req, res) => {
+  const ip = getIp(req);
+  if (!checkRateLimit(ip, 10)) return res.status(429).json({ valid: false, error: 'Too many attempts.' });
+
   const { code } = req.body;
   if (!code) return res.status(400).json({ error: 'code required' });
 
@@ -131,13 +151,11 @@ app.post('/api/verify', (req, res) => {
 
   t.status = 'used';
   saveStore();
-
   res.json({ valid: true, action: t.action, details: t.details });
 });
 
-// Serve confirm page for any token route
 app.get('/confirm/:token', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'confirm.html'));
 });
 
-app.listen(PORT, () => console.log(`confirm-service running on :${PORT}`));
+app.listen(PORT, () => console.log(`confirm-gate running on :${PORT} | PIN: ${CONFIRM_PIN ? 'enabled' : 'disabled'}`));
