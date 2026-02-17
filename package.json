@@ -1,12 +1,44 @@
 {
-  "name": "confirm-service",
-  "version": "1.0.0",
-  "description": "Destructive action confirmation gate",
+  "name": "confirm-gate",
+  "version": "1.2.0",
+  "description": "Destructive action confirmation gate for AI agents — generates one-time NATO-phonetic codes before irreversible operations.",
   "main": "server.js",
+  "bin": {
+    "confirm-gate": "bin/confirm-gate.js"
+  },
+  "files": [
+    "bin/",
+    "server.js",
+    "public/",
+    "README.md"
+  ],
   "scripts": {
     "start": "node server.js"
   },
+  "keywords": [
+    "ai-agent",
+    "safety",
+    "confirmation",
+    "destructive-action",
+    "homelab",
+    "docker",
+    "cli"
+  ],
+  "author": "Dadmin88",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dadmin88/confirm-gate.git"
+  },
+  "homepage": "https://github.com/Dadmin88/confirm-gate#readme",
+  "bugs": {
+    "url": "https://github.com/Dadmin88/confirm-gate/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.9"
   }
 }

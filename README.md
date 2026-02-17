@@ -2,7 +2,9 @@
 
 A lightweight confirmation gate for AI agents before performing destructive actions.
 
-![version](https://img.shields.io/badge/version-1.0.0-blue) ![docker](https://img.shields.io/badge/docker-ready-green)
+[![npm](https://img.shields.io/npm/v/confirm-gate)](https://www.npmjs.com/package/confirm-gate)
+[![Docker](https://img.shields.io/badge/ghcr.io-dadmin88%2Fconfirm--gate-blue)](https://github.com/Dadmin88/confirm-gate/pkgs/container/confirm-gate)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 | Warning Screen | Confirmation Code |
 |:-:|:-:|
@@ -36,6 +38,14 @@ No code = no action. Codes expire in 5 minutes and are single-use.
 
 ## Quick Start
 
+**Option A — npx (Node.js, no Docker needed):**
+```bash
+npx confirm-gate
+# or install globally:
+npm install -g confirm-gate && confirm-gate
+```
+
+**Option B — Docker:**
 ```bash
 docker run -d \
   --name confirm-gate \
@@ -46,9 +56,28 @@ docker run -d \
   ghcr.io/dadmin88/confirm-gate:latest
 ```
 
+Then visit `http://localhost:3051/setup` to set your PIN.
+
+## CLI Options
+
+```
+confirm-gate [options]
+
+  --port <n>        Port to listen on          (default: 3051)
+  --base-url <url>  Base URL for confirm links  (default: http://localhost:3051)
+  --data <path>     Directory for token store   (default: ~/.confirm-gate)
+  --pin <code>      Require PIN to confirm      (default: none)
+  --version         Print version
+  --help            Show help
+```
+
 ## With PIN Protection
 
 ```bash
+# npx
+npx confirm-gate --pin mysecretpin
+
+# Docker
 docker run -d \
   --name confirm-gate \
   --restart unless-stopped \
@@ -59,7 +88,7 @@ docker run -d \
   ghcr.io/dadmin88/confirm-gate:latest
 ```
 
-When `CONFIRM_PIN` is set, the confirmation page will require the PIN before generating a code. A leaked URL is useless without it.
+When a PIN is set, the confirmation page requires it before generating a code. A leaked URL is useless without it.
 
 ## API
 
@@ -98,6 +127,10 @@ https://confirm.yourdomain.com {
 
 ## Stack
 
-- Node.js + Express
+- Node.js ≥ 18 + Express
 - File-based token store (no database needed)
 - Zero native dependencies — works on any platform
+
+## Contributing
+
+PRs welcome. Issues at [github.com/Dadmin88/confirm-gate](https://github.com/Dadmin88/confirm-gate/issues).
