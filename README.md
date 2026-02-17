@@ -2,7 +2,11 @@
 
 A lightweight confirmation gate for AI agents before performing destructive actions.
 
-![Confirm Gate Screenshot](https://img.shields.io/badge/version-1.0.0-blue) ![Docker](https://img.shields.io/badge/docker-ready-green)
+![version](https://img.shields.io/badge/version-1.0.0-blue) ![docker](https://img.shields.io/badge/docker-ready-green)
+
+| Warning Screen | Confirmation Code |
+|:-:|:-:|
+| ![Warning screen](docs/screenshot-warning.jpg) | ![Code screen](docs/screenshot-code.jpg) |
 
 ## The Problem
 
